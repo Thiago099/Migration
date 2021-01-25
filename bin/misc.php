@@ -5,7 +5,7 @@
       for ($j=0; $j < $count; $j++)
         $str.=' ';
       return $str;
-  }
+  	}
 	function file_dump($path)
 	{
 		$file = fopen('config.json', "r");
@@ -28,7 +28,7 @@
 			fwrite($file, $piece, strlen($piece));
 		}
 	}
-	function match(&$c,$target,$source)
+	function match_after(&$c ,$target,$source)
 	{
 			$source_lenght=count($source);
 			$target_lenght=count($target);
