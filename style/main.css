@@ -1,0 +1,76 @@
+*{
+background-color: #171717;
+color: white;
+}
+/*Spacing*/
+input,select,textarea,div.error, select option,label{
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  width: 100%;
+
+}
+label{
+
+  font-size: 1.5em;
+  display: block;
+}
+label::after {
+  content: " : ";
+}
+/*Color*/
+input,select,textarea, select option{
+  background: #292929;
+  outline: none;
+  border:1px solid white;
+}
+input{
+  width: 47%;
+  display: inline;
+
+}
+div.button_container{
+  margin: auto;
+  max-width: 1075px;
+}
+div.button{
+  margin-left: 40px;
+}
+input.solo{
+  width: 100%;
+  margin: 10px;
+}
+@media (max-width:1107px) {
+  div.button_container{
+    margin: auto;
+    max-width: 1000px;
+  }
+  input{
+    width: 100%;
+    margin: 10px;
+  }
+  div.button{
+    margin-left: 0px;
+  }
+}
+input:active{
+  background-color: #181818;
+}
+select{
+  border-color: white;
+}
+div.error
+{
+  color:red;
+  font-size: 1.1em;
+}
+textarea{
+  width: 98%;
+}
+input,select{
+  font-size: 1.3em;
+}
+div.container{
+  margin: auto;
+  max-width: 1000px;
+}
