@@ -47,7 +47,7 @@ if(count($up)>0)
     $f_migration = fopen($p_migration,'w');
     fwrite_long($f_migration, $code);
     echo "arquivo gerado : $p_migration.";
-    echo $code;
+    // echo $code;
 }
 else
 echo "Nada a ser gerado.";
