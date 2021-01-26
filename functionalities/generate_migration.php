@@ -27,7 +27,7 @@ class Migration_$time extends CI_Migration
 foreach ($up as $ii)
 {
     $code.="        \$this->db->query(\"$ii\");\n";
-    $db->run($ii);
+    // $db->run($ii);
 }
 $code.="
     }
@@ -44,9 +44,10 @@ $code.="
 ?>";
 if(count($up)>0)
 {
-    $f_migration = fopen($p_migration,'w');
-    fwrite_long($f_migration, $code);
-    echo "arquivo gerado : $p_migration.";
+    // $f_migration = fopen($p_migration,'w');
+    // fwrite_long($f_migration, $code);
+    // echo "arquivo gerado : $p_migration.";
+    echo $code;
 }
 else
 echo "Nada a ser gerado.";

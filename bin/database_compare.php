@@ -14,6 +14,7 @@ FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_SCHEMA = '$target'");
 $output=[];
 $alter=[];
+$last=[];
 foreach ($source_tables as $ii)
 {
   $source_table = $ii['TABLE_NAME'];
@@ -38,7 +39,7 @@ foreach ($source_tables as $ii)
       $target_fks = $db->query("SELECT i.CONSTRAINT_NAME `constraint`
       FROM information_schema.TABLE_CONSTRAINTS i
       WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY'
-      AND i.TABLE_SCHEMA = '$source'
+      AND i.TABLE_SCHEMA = '$target'
       AND i.TABLE_NAME = '$table'
       GROUP BY `constraint`;");
 
@@ -47,6 +48,7 @@ foreach ($source_tables as $ii)
 
 
       $ret='';
+      $ret2='';
       foreach ($source_columns as $kk)
       {
         $source_column = $kk['COLUMN_NAME'];
@@ -107,7 +109,10 @@ foreach ($source_tables as $ii)
             $source_fk=$ll['constraint'];
             if($source_fk === $target_fk)
             {
+              var_dump($source_fks);
+              var_dump($target_fks);
               $found_fk=true;
+              break;
             }
           }
           if(!$found_fk)
@@ -131,9 +136,18 @@ foreach ($source_tables as $ii)
           }
           if(!$found_fk)
           {
-            $ret.="
-            ADD INDEX `$kk[constraint]` (`$kk[column]`),
-            ADD CONSTRAINT `$kk[constraint]` FOREIGN KEY (`$kk[column]`) REFERENCES `$kk[schema]`.`$kk[table]` (`$kk[key]`) ON UPDATE $kk[UPDATE_RULE] ON DELETE $kk[DELETE_RULE],\n";
+          $fk = $db->query("SELECT k.CONSTRAINT_NAME `constraint`,k.CONSTRAINT_SCHEMA `schema`, COLUMN_NAME `column`,k.REFERENCED_TABLE_NAME `table`, k.REFERENCED_COLUMN_NAME `key`, r.UPDATE_RULE, r.DELETE_RULE
+          FROM information_schema.TABLE_CONSTRAINTS i
+          LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+          LEFT JOIN information_schema.REFERENTIAL_CONSTRAINTS r ON i.CONSTRAINT_NAME = r.CONSTRAINT_NAME
+          WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY'
+          AND i.TABLE_SCHEMA = '$source'
+          AND i.TABLE_NAME = '$table'
+          AND k.CONSTRAINT_NAME = '$source_fk'
+          GROUP BY K.COLUMN_NAME;")[0];
+
+              $ret2.="                  ADD INDEX `$fk[constraint]` (`$fk[column]`),
+                  ADD CONSTRAINT `$fk[constraint]` FOREIGN KEY (`$fk[column]`) REFERENCES `$fk[schema]`.`$fk[table]` (`$fk[key]`) ON UPDATE $fk[UPDATE_RULE] ON DELETE $fk[DELETE_RULE],\n";
           }
         }
         foreach ($target_pks as $ii) 
@@ -173,6 +187,12 @@ foreach ($source_tables as $ii)
         $ret=substr($ret, 0, -2);
         $alter[]="
                   ALTER TABLE `$table`\n$ret;\n        ";
+      }
+      if($ret2!=='')
+      {
+        $ret2=substr($ret2, 0, -2);
+        $last[]="
+                  ALTER TABLE `$table`\n$ret2;\n        ";
       }
 
     }
@@ -228,7 +248,7 @@ foreach ($source_tables as $ii)
         $ret2.="              ADD CONSTRAINT `$i[constraint]` FOREIGN KEY (`$i[column]`) REFERENCES `$i[table]` (`$i[key]`) ON UPDATE $i[UPDATE_RULE] ON DELETE $i[DELETE_RULE],\n";
       }
       $ret2=substr($ret2, 0, -2).";\n        ";
-      $alter[]=$ret2;
+      $last[]=$ret2;
     }
     $ret=substr($ret, 0, -2);
     $ret.="
@@ -256,6 +276,6 @@ foreach ($target_tables as $ii)
   }
 }
 
-return array_merge($output,$alter);
+return array_merge($output,$alter,$last);
 }
 ?>
