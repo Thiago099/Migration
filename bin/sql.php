@@ -2,9 +2,9 @@
 class sql
 {
   public $conn;
-  public static string $server;
-  public static string $user;
-  public static string $password;
+  public static $server;
+  public static $user;
+  public static $password;
 
   public function __construct($dbname="")
   {
