@@ -166,6 +166,7 @@ foreach ($source_tables as $ii)
             $ret.="                  DROP PRIMARY KEY,\n";;
           }
         }
+        $pks='';
         foreach ($source_pks as $ii) 
         {
           $found_pk=false;
@@ -179,23 +180,28 @@ foreach ($source_tables as $ii)
           }
           if(!$found_pk)
           {
-            $ret.="                  ADD PRIMARY KEY (`$ii[COLUMN_NAME]`),\n";
+            $pks.="`$ii[COLUMN_NAME]`, ";
           }
-      }
-      if($ret!=='')
-      {
-        $ret=substr($ret, 0, -2);
-        $alter[]="
-                  ALTER TABLE `$table`\n$ret;\n        ";
-      }
-      if($ret2!=='')
-      {
-        $ret2=substr($ret2, 0, -2);
-        $last[]="
-                  ALTER TABLE `$table`\n$ret2;\n        ";
-      }
+        }
+        if($pks!=='')
+        {
+          $pks=substr($pks, 0, -2);
+          $ret.="                  ADD PRIMARY KEY ($pks),\n";
+        }
+        if($ret!=='')
+        {
+          $ret=substr($ret, 0, -2);
+          $alter[]="
+                    ALTER TABLE `$table`\n$ret;\n        ";
+        }
+        if($ret2!=='')
+        {
+          $ret2=substr($ret2, 0, -2);
+          $last[]="
+                    ALTER TABLE `$table`\n$ret2;\n        ";
+        }
 
-    }
+      }
   }
   if(!$found_table)
   {
