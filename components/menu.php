@@ -1,6 +1,4 @@
-<?php
-if(isset($_GET['database'])):
-?>
+
 
 <label>Opções</label>
 </div>
@@ -13,9 +11,4 @@ if(isset($_GET['database'])):
     </div>
   </div>
 <div class="container">
-<?php else: ?>
-<label>Opções</label>
-<input class="solo" type="submit" value="Selecionar">
-<?php
-endif;
-?>
+
